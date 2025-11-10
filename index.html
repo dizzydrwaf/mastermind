@@ -9,13 +9,12 @@
 <body>
   <header class="topbar">
     <h1>Mastermind</h1>
-    <!-- <p class="subtitle">Super duper good mastermind game</p> -->
     <div class="top-actions">
-      <button class="btn">PvP</button>
-      <button class="btn">PvAI</button>
-      <button class="btn">New game</button>
-      <button class="btn">Submit guess</button>
-      <button class="btn">Reveal code</button>
+      <button class="btn" id="btn-pvp">PvP</button>
+      <button class="btn" id="btn-pvai">PvAI</button>
+      <button class="btn" id="btn-new-game">New game</button>
+      <button class="btn" id="btn-submit">Submit guess</button>
+      <button class="btn" id="btn-reveal">Reveal code</button>
     </div>
   </header>
 
@@ -24,13 +23,14 @@
         <section class="board-area">
           <ol class="guesses">
             <li class="guess-row">
+              <span class="row-number">9</span>
               <div class="peg-slots">
                 <div class="peg-slot"></div>
                 <div class="peg-slot"></div>
                 <div class="peg-slot"></div>
                 <div class="peg-slot"></div>
                 <div class="peg-slot"></div>
-            </div>
+              </div>
               <div class="feedback">
                 <div class="feedback-slot"></div>
                 <div class="feedback-slot"></div>
@@ -39,8 +39,8 @@
                 <div class="feedback-slot"></div>
               </div>
             </li>
-
             <li class="guess-row">
+              <span class="row-number">8</span>
               <div class="peg-slots">
                 <div class="peg-slot"></div>
                 <div class="peg-slot"></div>
@@ -56,8 +56,8 @@
                 <div class="feedback-slot"></div>
               </div>
             </li>
-
             <li class="guess-row">
+              <span class="row-number">7</span>
               <div class="peg-slots">
                 <div class="peg-slot"></div>
                 <div class="peg-slot"></div>
@@ -73,27 +73,124 @@
                 <div class="feedback-slot"></div>
               </div>
             </li>
-
-
+            <li class="guess-row">
+              <span class="row-number">6</span>
+              <div class="peg-slots">
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+              </div>
+            </li>
+            <li class="guess-row">
+              <span class="row-number">5</span>
+              <div class="peg-slots">
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+              </div>
+            </li>
+            <li class="guess-row">
+              <span class="row-number">4</span>
+              <div class="peg-slots">
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+              </div>
+            </li>
+            <li class="guess-row">
+              <span class="row-number">3</span>
+              <div class="peg-slots">
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+              </div>
+            </li>
+            <li class="guess-row">
+              <span class="row-number">2</span>
+              <div class="peg-slots">
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+              </div>
+            </li>
+            <li class="guess-row">
+              <span class="row-number">1</span>
+              <div class="peg-slots">
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+                <div class="peg-slot"></div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+                <div class="feedback-slot"></div>
+              </div>
+            </li>
           </ol>
 
-          <!-- Secret row for secret pass code -->
           <div class="secret-row">
             <div class="secret-pegs">
-              <div class="code-slot covered"></div>
-              <div class="code-slot covered"></div>
-              <div class="code-slot covered"></div>
-              <div class="code-slot covered"></div>
-              <div class="code-slot covered"></div>
+              <div class="code-slot covered"><span>?</span></div>
+              <div class="code-slot covered"><span>?</span></div>
+              <div class="code-slot covered"><span>?</span></div>
+              <div class="code-slot covered"><span>?</span></div>
+              <div class="code-slot covered"><span>?</span></div>
             </div>
           </div>
         </section>
 
-        <!-- Colors -->
         <aside class="controls">
           <h3>Colors</h3>
           <div class="colors">
-              <!-- röd, grön, blå, gul, vit, svart -->
             <button class="color-switch" data-color="red"></button>
             <button class="color-switch" data-color="green"></button>
             <button class="color-switch" data-color="blue"></button>
@@ -108,7 +205,5 @@
     <footer class="footer">
         <script src="script.js"></script>
     </footer>
-
-  
 </body>
 </html>

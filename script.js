@@ -34,3 +34,64 @@ switches.forEach(btn => {
 const main_game = document.getElementById("main-game-board");
 
 // main_game.style.display = "none"
+
+// GAME VARIABLES
+const colors = ["green", "yellow", "black", "white", "blue", "red"];
+let difficulty = 5; // när man byter till easy-mode, ändra värdet till 4
+
+// PLAYER VS AI
+let pvAiCode = ["green", "white", "green", "black", "red"];
+
+const autoCode = () => {
+  pvAiCode = [];
+  for (let i = 0; i < difficulty; i++) {
+    pvAiCode.push(colors[Math.floor(Math.random() * colors.length)]);
+  }
+  console.log(pvAiCode);
+}
+
+let guess = ["red", "black", "green", "yellow", "yellow"];
+
+const finishAttempt = () => {
+  let guessCopy = [...guess];
+  let codeCopy = [...pvAiCode];
+  let blackPegs = 0;
+  let whitePegs = 0;
+
+  // kolla för svart
+  for (let i = 0; i < guessCopy.length; i++) {
+    if (guessCopy[i] == codeCopy[i]) {
+      blackPegs++;
+      guessCopy[i] = null;
+      codeCopy[i] = null;
+    }
+  }
+
+  // kolla för vit
+  for (let i = 0; i < guessCopy.length; i++) {
+    if (guessCopy[i] != null) {
+      let foundIndex = codeCopy.indexOf(guessCopy[i]);
+      if (foundIndex > -1) {
+        whitePegs++;
+        codeCopy[foundIndex] = null;
+      }
+    }
+  }
+  return { blackPegs: blackPegs, whitePegs: whitePegs };
+}
+
+const submitGuess = () => {
+  const pegs = finishAttempt();
+
+  console.log("Black Pegs:", pegs.blackPegs);
+  console.log("White Pegs:", pegs.whitePegs);
+
+  if (pegs.blackPegs === difficulty) {
+    winGame();
+    guess = [];
+    pvAiCode = [];
+  } // else, visa pegs på skärmen
+}
+
+
+submitGuess()

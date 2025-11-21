@@ -1,3 +1,8 @@
+// variable sharing
+
+const rootStyles = getComputedStyle(document.documentElement);
+const resetColor = rootStyles.getPropertyValue('').trim();
+
 // what player is touching
 let selectedSlot = null;
 
@@ -34,6 +39,28 @@ switches.forEach(btn => {
 const main_game = document.getElementById("main-game-board");
 
 // main_game.style.display = "none"
+
+// clear game field
+
+const clearFieldBtn = document.getElementById("clear-all");
+const clearPegBtn = document.getElementById("clear");
+
+clearFieldBtn.addEventListener("click", () => {
+  pegSlots.forEach(slot => {
+    slot.style.background = resetColor;
+  });
+});
+
+// clear single peg
+
+clearPegBtn.addEventListener("click", () => {
+  pegSlots.forEach(slot => {
+    if (!selectedSlot) return;
+
+    slot.style.background = resetColor;
+  })
+})
+
 
 // GAME VARIABLES
 const colors = ["green", "yellow", "black", "white", "blue", "red"];

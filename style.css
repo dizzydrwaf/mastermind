@@ -357,6 +357,7 @@ body {
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1.25rem;
   justify-items: center;
+  margin-bottom: 1em;
 }
 
 .color-switch {
@@ -392,6 +393,16 @@ body {
 .color-switch[data-color="yellow"] { background-color: var(--color-yellow); }
 .color-switch[data-color="white"] { background-color: var(--color-white); }
 .color-switch[data-color="black"] { background-color: var(--color-black); }
+
+/* clear btn */
+.clear-field {
+  display: flex;
+  gap: 0.5em;
+}
+
+.clear {
+  width: 50%;
+}
 
 
 /* --- 9. Responsive (Mobile) --- */

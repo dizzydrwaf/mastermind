@@ -57,7 +57,10 @@ clearPegBtn.addEventListener("click", () => {
   pegSlots.forEach(slot => {
     if (!selectedSlot) return;
 
-    slot.style.background = resetColor;
+    selectedSlot.style.background = resetColor;
+
+    selectedSlot.classList.remove("selected");
+    selectedSlot = null;
   })
 })
 

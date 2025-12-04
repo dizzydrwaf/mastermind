@@ -1,127 +1,248 @@
-// variable sharing
+const COLORS = ["red", "green", "blue", "yellow", "white", "black"];
+const COLOR_MAP = {
+  red: "var(--color-red)",
+  green: "var(--color-green)",
+  blue: "var(--color-blue)",
+  yellow: "var(--color-yellow)",
+  white: "var(--color-white)",
+  black: "var(--color-black)"
+};
 
-const rootStyles = getComputedStyle(document.documentElement);
-const resetColor = rootStyles.getPropertyValue('').trim();
-
-// what player is touching
+let secretCode = [];
+let currentRowIndex = 0;
+let currentGuess = [null, null, null, null, null]; // 5 slots
+let isGameOver = false;
 let selectedSlot = null;
 
-// Select all peg slots
-const pegSlots = document.querySelectorAll(".peg-slot");
-pegSlots.forEach(slot => {
-  slot.addEventListener("click", () => {
-    // Clear previous selection highlighting
-    if (selectedSlot) selectedSlot.classList.remove("selected");
+const rowElements = Array.from(document.querySelectorAll(".guess-row")).reverse();
+const submitBtn = document.getElementById("btn-submit");
+const newGameBtn = document.getElementById("btn-new-game");
+const secretContainer = document.getElementById("secret-code-container");
+const clearPegBtn = document.getElementById("clear-peg");
+const clearRowBtn = document.getElementById("clear-row");
 
-    // Select new slot
-    selectedSlot = slot;
-    slot.classList.add("selected");
+// Placeholder elements for future logic
+const btnPvp = document.getElementById("btn-pvp");
+const btnPvai = document.getElementById("btn-pvai");
+
+function initGame() {
+  // Reset Variables
+  secretCode = generateSecretCode();
+  currentRowIndex = 0;
+  currentGuess = [null, null, null, null, null];
+  isGameOver = false;
+  selectedSlot = null;
+
+  // Reset UI
+  rowElements.forEach((row, index) => {
+    // Clear styles
+    row.classList.remove("active-row");
+    const slots = row.querySelectorAll(".peg-slot");
+    slots.forEach(slot => {
+      slot.style.background = "";
+      slot.style.boxShadow = "";
+      slot.classList.remove("selected");
+    });
+
+    // Clear feedback
+    const feedbackSlots = row.querySelectorAll(".feedback-slot");
+    feedbackSlots.forEach(slot => {
+      slot.style.background = "";
+      slot.style.boxShadow = "";
+      slot.classList.remove("black", "white");
+    });
   });
-});
 
-// Select all color switches
-const switches = document.querySelectorAll(".color-switch");
-switches.forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (!selectedSlot) return; // No slot selected
+  // Activate first row
+  rowElements[0].classList.add("active-row");
 
-    // Apply the color visually
-    const color = btn.dataset.color;
-    selectedSlot.style.background = color;
-    console.log(selectedSlot.style.background)
+  // Reset Secret Code Display
+  secretContainer.innerHTML = `
+    <div class="code-slot">?</div>
+    <div class="code-slot">?</div>
+    <div class="code-slot">?</div>
+    <div class="code-slot">?</div>
+    <div class="code-slot">?</div>
+  `;
 
-    // Optional: remove selection after placing
-    selectedSlot.classList.remove("selected");
-    selectedSlot = null;
-  });
-});
-
-const main_game = document.getElementById("main-game-board");
-
-// main_game.style.display = "none"
-
-// clear game field
-
-const clearFieldBtn = document.getElementById("clear-all");
-const clearPegBtn = document.getElementById("clear");
-
-clearFieldBtn.addEventListener("click", () => {
-  pegSlots.forEach(slot => {
-    slot.style.background = resetColor;
-  });
-});
-
-// clear single peg
-
-clearPegBtn.addEventListener("click", () => {
-  pegSlots.forEach(slot => {
-    if (!selectedSlot) return;
-
-    selectedSlot.style.background = resetColor;
-
-    selectedSlot.classList.remove("selected");
-    selectedSlot = null;
-  })
-})
-
-
-// GAME VARIABLES
-const colors = ["green", "yellow", "black", "white", "blue", "red"];
-let difficulty = 5; // när man byter till easy-mode, ändra värdet till 4
-
-// PLAYER VS AI
-let pvAiCode = ["green", "white", "green", "black", "red"];
-
-const autoCode = () => {
-  pvAiCode = [];
-  for (let i = 0; i < difficulty; i++) {
-    pvAiCode.push(colors[Math.floor(Math.random() * colors.length)]);
-  }
-  console.log(pvAiCode);
+  console.log("Secret Code (for debug):", secretCode);
+  submitBtn.disabled = false;
 }
 
-let guess = ["red", "black", "green", "yellow", "yellow"];
+function generateSecretCode() {
+  const code = [];
+  for (let i = 0; i < 5; i++) {
+    code.push(COLORS[Math.floor(Math.random() * COLORS.length)]);
+  }
+  return code;
+}
 
-const finishAttempt = () => {
-  let guessCopy = [...guess];
-  let codeCopy = [...pvAiCode];
+
+document.querySelectorAll(".peg-slot").forEach(slot => {
+  slot.addEventListener("click", function () {
+    if (isGameOver) return;
+
+    // Identify which row this slot belongs to
+    const parentRow = this.closest(".guess-row");
+
+    if (!parentRow.classList.contains("active-row")) return;
+
+    if (selectedSlot) selectedSlot.classList.remove("selected");
+
+    selectedSlot = this;
+    this.classList.add("selected");
+  });
+});
+
+document.querySelectorAll(".color-switch").forEach(btn => {
+  btn.addEventListener("click", function () {
+    if (!selectedSlot || isGameOver) return;
+
+    const colorName = this.dataset.color;
+
+    selectedSlot.style.backgroundColor = COLOR_MAP[colorName];
+    selectedSlot.style.boxShadow = ""; // let css handle glass effect
+
+    const parentRow = selectedSlot.closest(".guess-row");
+    const slotIndex = Array.from(parentRow.querySelectorAll(".peg-slot")).indexOf(selectedSlot);
+    currentGuess[slotIndex] = colorName;
+
+    selectedSlot.classList.remove("selected");
+    const nextSlot = parentRow.querySelectorAll(".peg-slot")[slotIndex + 1];
+    if (nextSlot) {
+      selectedSlot = nextSlot;
+      nextSlot.classList.add("selected");
+    } else {
+      selectedSlot = null;
+    }
+  });
+});
+
+clearPegBtn.addEventListener("click", () => {
+  if (selectedSlot && !isGameOver) {
+    const parentRow = selectedSlot.closest(".guess-row");
+    const slotIndex = Array.from(parentRow.querySelectorAll(".peg-slot")).indexOf(selectedSlot);
+
+    selectedSlot.style.background = "";
+    currentGuess[slotIndex] = null;
+    selectedSlot.classList.remove("selected");
+    selectedSlot = null;
+  }
+});
+
+clearRowBtn.addEventListener("click", () => {
+  if (isGameOver) return;
+  const activeRow = rowElements[currentRowIndex];
+  const slots = activeRow.querySelectorAll(".peg-slot");
+
+  slots.forEach(slot => slot.style.background = "");
+  currentGuess = [null, null, null, null, null];
+  if (selectedSlot) {
+    selectedSlot.classList.remove("selected");
+    selectedSlot = null;
+  }
+});
+
+
+
+submitBtn.addEventListener("click", () => {
+  if (isGameOver) return;
+
+  if (currentGuess.includes(null)) {
+    alert("Please fill all 5 slots before submitting!");
+    return;
+  }
+
+  const result = calculateFeedback(currentGuess, secretCode);
+
+  renderFeedback(result);
+
+  if (result.blackPegs === 5) {
+    endGame(true);
+    return;
+  }
+
+  if (currentRowIndex >= 9) {
+    endGame(false);
+    return;
+  }
+
+  currentRowIndex++;
+  currentGuess = [null, null, null, null, null];
+
+  rowElements.forEach(r => r.classList.remove("active-row"));
+  rowElements[currentRowIndex].classList.add("active-row");
+});
+
+function calculateFeedback(guess, code) {
   let blackPegs = 0;
   let whitePegs = 0;
 
-  // kolla för svart
-  for (let i = 0; i < guessCopy.length; i++) {
-    if (guessCopy[i] == codeCopy[i]) {
+  let guessCopy = [...guess];
+  let codeCopy = [...code];
+
+  // 1. Check for Exact Matches (Black)
+  for (let i = 0; i < 5; i++) {
+    if (guessCopy[i] === codeCopy[i]) {
       blackPegs++;
-      guessCopy[i] = null;
-      codeCopy[i] = null;
+      guessCopy[i] = null; // Mark as used
+      codeCopy[i] = null;  // Mark as used
     }
   }
 
-  // kolla för vit
-  for (let i = 0; i < guessCopy.length; i++) {
-    if (guessCopy[i] != null) {
-      let foundIndex = codeCopy.indexOf(guessCopy[i]);
+  // 2. Check for Color Matches (White)
+  for (let i = 0; i < 5; i++) {
+    if (guessCopy[i] !== null) {
+      const foundIndex = codeCopy.indexOf(guessCopy[i]);
       if (foundIndex > -1) {
         whitePegs++;
-        codeCopy[foundIndex] = null;
+        codeCopy[foundIndex] = null; // Mark as used
       }
     }
   }
-  return { blackPegs: blackPegs, whitePegs: whitePegs };
+
+  return { blackPegs, whitePegs };
 }
 
-const submitGuess = () => {
-  const pegs = finishAttempt();
+function renderFeedback(result) {
+  const activeRow = rowElements[currentRowIndex];
+  const feedbackSlots = activeRow.querySelectorAll(".feedback-slot");
+  let slotIndex = 0;
 
-  console.log("Black Pegs:", pegs.blackPegs);
-  console.log("White Pegs:", pegs.whitePegs);
+  for (let i = 0; i < result.blackPegs; i++) {
+    feedbackSlots[slotIndex].style.backgroundColor = "var(--feedback-black)";
+    feedbackSlots[slotIndex].style.border = "none";
+    slotIndex++;
+  }
 
-  if (pegs.blackPegs === difficulty) {
-    winGame();
-    guess = [];
-    pvAiCode = [];
-  } // else, visa pegs på skärmen
+  for (let i = 0; i < result.whitePegs; i++) {
+    feedbackSlots[slotIndex].style.backgroundColor = "var(--feedback-white)";
+    feedbackSlots[slotIndex].style.border = "none";
+    slotIndex++;
+  }
 }
 
+function endGame(isWin) {
+  isGameOver = true;
+  submitBtn.disabled = true;
 
-submitGuess()
+  secretContainer.innerHTML = "";
+  secretCode.forEach(color => {
+    const peg = document.createElement("div");
+    peg.className = "code-slot";
+    peg.style.backgroundColor = COLOR_MAP[color];
+    secretContainer.appendChild(peg);
+  });
+
+  setTimeout(() => {
+    if (isWin) {
+      alert("Congratulations! You broke the code!");
+    } else {
+      alert("Game Over! Better luck next time.");
+    }
+  }, 100);
+}
+
+newGameBtn.addEventListener("click", initGame);
+
+initGame();

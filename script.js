@@ -14,7 +14,7 @@ const COLOR_MAP = {
 
 let secretCode = [];
 let currentRowIndex = 0;
-let currentGuess = [null, null, null, null, null]; // 5 slots
+let currentGuess = [null, null, null, null, null]; 
 let isGameOver = false;
 let selectedSlot = null;
 
@@ -25,21 +25,18 @@ const secretContainer = document.getElementById("secret-code-container");
 const clearPegBtn = document.getElementById("clear-peg");
 const clearRowBtn = document.getElementById("clear-row");
 
-// Placeholder elements for future logic
+// Gör inget just nu, placeholder
 const btnPvp = document.getElementById("btn-pvp");
 const btnPvai = document.getElementById("btn-pvai");
 
 function initGame() {
-  // Reset Variables
   secretCode = generateSecretCode();
   currentRowIndex = 0;
   currentGuess = [null, null, null, null, null];
   isGameOver = false;
   selectedSlot = null;
 
-  // Reset UI
   rowElements.forEach((row, index) => {
-    // Clear styles
     row.classList.remove("active-row");
     const slots = row.querySelectorAll(".peg-slot");
     slots.forEach(slot => {
@@ -48,7 +45,6 @@ function initGame() {
       slot.classList.remove("selected");
     });
 
-    // Clear feedback
     const feedbackSlots = row.querySelectorAll(".feedback-slot");
     feedbackSlots.forEach(slot => {
       slot.style.background = "";
@@ -57,10 +53,8 @@ function initGame() {
     });
   });
 
-  // Activate first row
   rowElements[0].classList.add("active-row");
 
-  // Reset Secret Code Display
   secretContainer.innerHTML = `
     <div class="code-slot">?</div>
     <div class="code-slot">?</div>
@@ -86,7 +80,6 @@ document.querySelectorAll(".peg-slot").forEach(slot => {
   slot.addEventListener("click", function () {
     if (isGameOver) return;
 
-    // Identify which row this slot belongs to
     const parentRow = this.closest(".guess-row");
 
     if (!parentRow.classList.contains("active-row")) return;
@@ -105,7 +98,7 @@ document.querySelectorAll(".color-switch").forEach(btn => {
     const colorName = this.dataset.color;
 
     selectedSlot.style.backgroundColor = COLOR_MAP[colorName];
-    selectedSlot.style.boxShadow = ""; // let css handle glass effect
+    selectedSlot.style.boxShadow = "";
 
     const parentRow = selectedSlot.closest(".guess-row");
     const slotIndex = Array.from(parentRow.querySelectorAll(".peg-slot")).indexOf(selectedSlot);
@@ -185,22 +178,22 @@ function calculateFeedback(guess, code) {
   let guessCopy = [...guess];
   let codeCopy = [...code];
 
-  // 1. Check for Exact Matches (Black)
+  // 1. Kolla för svarta, rätt plats rätt färg (I detta fallet kommer dom visas som röda, eftersom att allt är svart och det är typ omöjligt att se svart)
   for (let i = 0; i < 5; i++) {
     if (guessCopy[i] === codeCopy[i]) {
       blackPegs++;
-      guessCopy[i] = null; // Mark as used
-      codeCopy[i] = null;  // Mark as used
+      guessCopy[i] = null; // Använd upp, så att dom inte räknas flera gånger
+      codeCopy[i] = null;  // Använd upp
     }
   }
 
-  // 2. Check for Color Matches (White)
+  // 2. Kolla för vita, fel plats rätt färg
   for (let i = 0; i < 5; i++) {
     if (guessCopy[i] !== null) {
       const foundIndex = codeCopy.indexOf(guessCopy[i]);
       if (foundIndex > -1) {
         whitePegs++;
-        codeCopy[foundIndex] = null; // Mark as used
+        codeCopy[foundIndex] = null; // Använd upp
       }
     }
   }

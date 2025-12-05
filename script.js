@@ -1,3 +1,7 @@
+// JAG MISSADE BUSSEN! SKRIV TILL MIG PÅ DISCORD. KAN VARA MED OCH FÖRKLARA FORTFARANDE
+
+// Efter variablerna och initGame() så är det mycket kod som sätter styles. Själva logiken för spelet kommer senare
+
 const COLORS = ["red", "green", "blue", "yellow", "white", "black"];
 const COLOR_MAP = {
   red: "var(--color-red)",
